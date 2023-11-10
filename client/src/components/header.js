@@ -1,19 +1,29 @@
 import { NavLink } from 'react-router-dom';
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { UserContext } from '../userContext';
 
 const Header = () => {
-  const [username, setUsername] = useState(null)
+  const { userInfo, setUserInfo } = useContext(UserContext)
+
+  const username = userInfo?.username
 
   useEffect(() => {
     fetch('http://localhost:8080/profile', {
       credentials: 'include'
     }).then(response => {
-      console.log(response);
       response.json().then(userInfo => {
-        setUsername(userInfo.username)
+        setUserInfo(userInfo);
       })
     })
   }, [])
+
+  const logout = () => {
+    fetch('http://localhost:8080/logout', {
+      method: "POST",
+      credentials: 'include'
+    })
+    setUserInfo(null)
+  }
 
     return (
         <header>
@@ -31,7 +41,7 @@ const Header = () => {
                   <NavLink to='/profile'>{username}</NavLink>
                 </li>
                 <li>
-                  <NavLink to='/logout'>Logout</NavLink>
+                  <button onClick={logout}>Logout</button>
                 </li>
               </>
             ) : (

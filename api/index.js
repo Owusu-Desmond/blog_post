@@ -54,7 +54,10 @@ app.post('/login', async (req, res) => {
             // login user
             jwt.sign({username, id: user._id}, jwtSecretKey, (err, token) => {
                 if (err) throw err;
-                res.cookie('token', token).json('ok')
+                res.cookie('token', token).json({
+                    id: user._id,
+                    username: user.username
+                })
             })
         } else {
             res.status(400).json({message: "Invalid credentials"})
@@ -70,6 +73,10 @@ app.get('/profile', (req, res) => {
         if (err) throw err
         res.json(info)
     } )
+})
+
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json('ok')
 })
 
 app.listen(process.env.PORT || 8081, () => {

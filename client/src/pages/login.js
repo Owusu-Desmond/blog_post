@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Navigate } from "react-router-dom"
+import { UserContext } from "../userContext";
 
 const LoginPage = () => {
+    const { setUserInfo } = useContext(UserContext)
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [redirect, setRedirect] = useState(false)
@@ -16,7 +18,9 @@ const LoginPage = () => {
             credentials: 'include'
         })
 
-        if(response.status === 200) {
+        if(response.ok) {
+            const user = await response.json()
+            setUserInfo(user)
             setRedirect(true)
         } 
     }
