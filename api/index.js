@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const User = require('./models/user')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser')
 
 const salt = bcrypt.genSaltSync(10)
 
@@ -13,6 +14,7 @@ const jwtSecretKey = process.env.JWT_SECRET_KEY
 
 app.use(cors({credentials: true, origin: "http://localhost:3000"}))
 app.use(express.json())
+app.use(cookieParser())
 
 async function connectDB() {
     try {
@@ -60,6 +62,14 @@ app.post('/login', async (req, res) => {
     } catch (err) {
         return res.status(400).json({message: err.message})
     }
+})
+
+app.get('/profile', (req, res) => {
+    const { token } = req.cookies;
+    jwt.verify(token, jwtSecretKey, (err, info) => {
+        if (err) throw err
+        res.json(info)
+    } )
 })
 
 app.listen(process.env.PORT || 8081, () => {
